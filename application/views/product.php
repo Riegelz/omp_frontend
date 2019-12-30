@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.19/css/dataTables.material.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?=base_url();?>assets/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="<?=base_url();?>assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <script src="<?=base_url();?>assets/dist/js/jquery-3.4.1.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -23,7 +24,7 @@
             <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                <h1 class="m-0 text-dark"><i class="fas fa-address-book"></i> Group</h1>
+                <h1 class="m-0 text-dark"><i class="fas fa-cubes"></i> Product</h1>
                 </div>
                 <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -37,7 +38,7 @@
 
         <div class="col-12">  
             <a class="btn-sm btn-success" href="#" data-toggle="modal" data-target="#modal-lg">
-                <em class="fas fa-plus"></em> Create Group
+                <em class="fas fa-plus"></em> Create Product
             </a>
         </div>
         <div class="col-12"> 
@@ -53,20 +54,26 @@
                                 <table class="mdl-data-table" id="myTable" style="display:none; width: 100%;">
                                     <thead>
                                     <tr>
-                                        <th style="width: 5%; text-align: center;">Group ID</th>
-                                        <th style="text-align: left;">Group Name</th>
-                                        <th style="text-align: left;">Description</th>
+                                        <th style="width: 5%; text-align: center;">Product ID</th>
+                                        <th style="text-align: left;">Product Name</th>
+                                        <th style="text-align: left;">Product Group</th>
+                                        <th class="none" style="text-align: left;">Product Prefix</th>
+                                        <th style="text-align: left;">Product Price</th>
+                                        <th class="none" style="text-align: left;">Product Detail</th>
                                         <th style="text-align: center;">Status</th>
                                         <th style="text-align: center;">Create Date</th>
                                         <th style="text-align: center;">Tools</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach($grouplists as $num => $row){ ?>
+                                        <?php foreach($productlists as $num => $row){ ?>
                                         <tr>
                                             <td style="text-align: center;"><?php echo $row->id;?></td>
+                                            <td style="text-align: left;"><?php echo $row->product_name;?></td>
                                             <td style="text-align: left;"><?php echo $row->group_name;?></td>
-                                            <td style="text-align: left;"><?php echo $row->group_description;?></td>
+                                            <td style="text-align: left;"><?php echo $row->product_prefix;?></td>
+                                            <td style="text-align: left;"><?php echo $row->product_price;?></td>
+                                            <td style="text-align: left;"><?php echo $row->product_detail;?></td>
                                             <?php switch($row->status) {
                                                 case 1:
                                                     $project_status = "Enable";
@@ -84,24 +91,31 @@
                                                 <script>
                                                     $('#editbutton<?php echo $i?>').click(function (e) { 
                                                         var base_url = $("#baseurl").val();
-                                                        var groupid = $("#editbutton<?php echo $i?>").attr("href").match(/#([0-9999]+)/)[1];
+                                                        var productid = $("#editbutton<?php echo $i?>").attr("href").match(/#([0-9999]+)/)[1];
                                                         $.ajax({
                                                             type: "POST",
-                                                            url: base_url + "api/getgroupid",
-                                                            data: {groupid:groupid},
+                                                            url: base_url + "api/getproductid",
+                                                            data: {productid:productid},
                                                             dataType: "json",
                                                             success: function (response) {
                                                                 if (response.status == "success") {
                                                                     $('#overlay').attr("style", "display: none !important");
-                                                                    $("#editgroupid").val(response.data.group_id);
-                                                                    $("#editgroupname").val(response.data.group_name);
-                                                                    $("#editgroupdescription").val(response.data.group_description);
+                                                                    $("#editproductid").val(response.data.product_id);
+                                                                    $("#editproductname").val(response.data.product_name);
+                                                                    $("#editproductprefix").val(response.data.product_prefix);
+                                                                    $('#editproductgroup').prepend($('<option>', {
+                                                                        value: response.data.group_id,
+                                                                        text: response.data.group_name + " ( Default Group )",
+                                                                        selected: 'selected'
+                                                                    }));
+                                                                    $("#editproductprice").val(response.data.product_price);
+                                                                    $("#editproductdetail").val(response.data.product_detail);
                                                                     if (response.data.status == "1") {
                                                                         var status = true;
                                                                     }else{
                                                                         var status = false;
                                                                     }
-                                                                    $("#editgroupstatus").bootstrapSwitch('state', status);
+                                                                    $("#editproductstatus").bootstrapSwitch('state', status);
                                                                 }
                                                             }
                                                         });
@@ -113,7 +127,7 @@
                                                     var base_url = $("#baseurl").val();
                                                     Swal.fire({
                                                     title: 'Do you want to delete?',
-                                                    text: "Please check detail before click 'Delete' a group!",
+                                                    text: "Please check detail before click 'Delete' a product!",
                                                     icon: 'warning',
                                                     showCancelButton: true,
                                                     confirmButtonColor: '#d33',
@@ -123,17 +137,17 @@
                                                         if (result.value) {
                                                             $('#preloader').show();
                                                             $.ajax({
-                                                            url: base_url + "api/delgroup",
+                                                            url: base_url + "api/delproduct",
                                                             type: 'post',
                                                             dataType: 'json',
-                                                            data: {id:<?php echo $row->id?>},
+                                                            data: {id:<?php echo $row->id?>,gid:<?php echo $row->group_id?>},
                                                                 success: function (response) {
                                                                     if (response == "success") {
                                                                         $('#preloader').hide();
                                                                         Swal.fire({
                                                                             icon: 'success',
                                                                             title: 'Deleted.',
-                                                                            text: "Group has been Delete",
+                                                                            text: "Product has been Delete",
                                                                             showConfirmButton: false,
                                                                             timer: 2500
                                                                         });
@@ -172,7 +186,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
         <div class="modal-header">
-            <h4 class="modal-title">Create Group</h4>
+            <h4 class="modal-title">Create Product</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -182,19 +196,43 @@
                 <div class="card-body">
 
                     <div class="form-group">
-                        <label for="groupname">Group Name</label>
-                        <input type="text" class="form-control" id="groupname" placeholder="">
-                        <div id="alertgroupname" class="alertgroupname" style="display:none; color: red; margin-top: 5px;"> Group name cannot be null</div>    
+                        <label for="productname">Product Name *</label>
+                        <input type="text" class="form-control" id="productname" placeholder="">
+                        <div id="alertproductname" class="alertproductname" style="display:none; color: red; margin-top: 5px;"> Product name cannot be null</div>    
                     </div>
 
                     <div class="form-group">
-                        <label for="groupdescription">Group Description</label>
-                        <textarea class="form-control" id="groupdescription" rows="3" placeholder=""></textarea>
+                        <label for="productprefix">Product Prefix</label>
+                        <input type="text" class="form-control" id="productprefix" placeholder="Example : TESTS ( Eng and Number chatacter not over 5 characters )" maxlength="5">
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleInputFile">Group Status</label><br>
-                        <input type="checkbox" id="groupstatus" name="groupstatus" checked data-bootstrap-switch data-off-color="danger" data-on-color="success">
+                        <label for="productprice">Product Price *</label>
+                        <input type="tel" class="form-control" id="productprice" placeholder="">
+                        <div id="alertproductprice" class="alertproductprice" style="display:none; color: red; margin-top: 5px;"> Product price cannot be null</div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productgroup">Product Group *</label>
+                        <select id="productgroup" name="productgroup" class="form-control select2" style="width: 100%;">
+                            <option selected="selected" value="">-- Select Group --</option>
+                            <?php foreach ($grouplists as $value) { ?>
+                                <?php if ($value->status == "1") { ?>
+                                    <option value="<?php echo $value->id; ?>"><?php echo $value->group_name; ?></option>
+                                <?php } ?>
+                            <?php } ?>
+                        </select>
+                        <div id="alertproductgroup" class="alertproductgroup" style="display:none; color: red; margin-top: 5px;"> Product group cannot be null</div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productdetail">Product Description</label>
+                        <textarea class="form-control" id="productdetail" rows="3" placeholder=""></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputFile">Product Status</label><br>
+                        <input type="checkbox" id="productstatus" name="productstatus" checked data-bootstrap-switch data-off-color="danger" data-on-color="success">
                     </div>
 
                 </div>
@@ -202,7 +240,7 @@
         </div>
         <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" id="btncreategroup" class="btn btn-primary">Create</button>
+            <button type="button" id="btncreateproduct" class="btn btn-primary">Create</button>
         </div>
         </div>
         <!-- /.modal-content -->
@@ -224,29 +262,52 @@
             <form method="post" id="editform" action="#">
                 <div class="card-body">
 
-                    <div class="form-group">
-                        <label for="editgroupname">Group Name</label>
-                        <input type="hidden" class="form-control" id="editgroupid" name="editgroupid">
-                        <input type="text" class="form-control" id="editgroupname" name="editgroupname">
-                        <div id="alerteditgroupname" class="alerteditgroupname" style="display:none; color: red; margin-top: 5px;"> Group name cannot be null</div>    
+                <div class="form-group">
+                        <label for="editproductname">Product Name *</label>
+                        <input type="hidden" class="form-control" id="editproductid" placeholder="">
+                        <input type="text" class="form-control" id="editproductname" placeholder="">
+                        <div id="alerteditproductname" class="alerteditproductname" style="display:none; color: red; margin-top: 5px;"> Product name cannot be null</div>    
                     </div>
 
                     <div class="form-group">
-                        <label for="editgroupdescription">Group Description</label>
-                        <textarea class="form-control" id="editgroupdescription" rows="3" placeholder=""></textarea>
+                        <label for="editproductprefix">Product Prefix</label>
+                        <input type="text" class="form-control" id="editproductprefix" placeholder="Example : TESTS ( Eng and Number chatacter not over 5 characters )" maxlength="5">
                     </div>
 
                     <div class="form-group">
-                        <label for="editgroupstatus">Group Status</label><br>
-                        <input type="checkbox" id="editgroupstatus" name="editgroupstatus" checked data-bootstrap-switch data-off-color="danger" data-on-color="success">
+                        <label for="editproductprice">Product Price *</label>
+                        <input type="tel" class="form-control" id="editproductprice" placeholder="">
+                        <div id="alerteditproductprice" class="alerteditproductprice" style="display:none; color: red; margin-top: 5px;"> Product price cannot be null</div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editproductgroup">Product Group *</label>
+                        <select id="editproductgroup" name="editproductgroup" class="form-control select2" style="width: 100%;">
+                            <?php foreach ($grouplists as $value) { ?>
+                                <?php if ($value->status == "1") { ?>
+                                    <option value="<?php echo $value->id; ?>"><?php echo $value->group_name; ?></option>
+                                <?php } ?>
+                            <?php } ?>
+                        </select>
+                        <div id="alerteditproductgroup" class="alerteditproductgroup" style="display:none; color: red; margin-top: 5px;"> Product group cannot be null</div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editproductdetail">Product Description</label>
+                        <textarea class="form-control" id="editproductdetail" rows="3" placeholder=""></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputFile">Product Status</label><br>
+                        <input type="checkbox" id="editproductstatus" name="editproductstatus" checked data-bootstrap-switch data-off-color="danger" data-on-color="success">
                     </div>
 
                 </div>
             </form>
         </div>
         <div class="modal-footer justify-content-between">
-            <button type="button" id="closeeditgroup" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" id="btneditgroup" class="btn btn-primary">Edit</button>
+            <button type="button" id="closeeditproduct" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" id="btneditproduct" class="btn btn-primary">Edit</button>
         </div>
         </div>
         <!-- /.modal-content -->
@@ -263,10 +324,11 @@
 <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.20/js/dataTables.material.min.js"></script>
 <script src="<?=base_url();?>assets/plugins/datatables/jquery.dataTables.js"></script>
+<script src="<?=base_url();?>assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="<?=base_url();?>assets/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <script src="<?=base_url();?>assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script src="<?=base_url();?>assets/dist/js/group.js"></script>
+<script src="<?=base_url();?>assets/dist/js/product.js"></script>
 
 <style type="text/css">
 
@@ -292,6 +354,15 @@
   background-repeat: no-repeat;
   background-position: center;
   margin: -100px 0 0 -100px;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before, table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
+  top: 30%;
+  left: 10px;
+}
+
+.mdl-data-table td:last-of-type, .mdl-data-table th:last-of-type{
+  text-align: left;
 }
 
 </style>
