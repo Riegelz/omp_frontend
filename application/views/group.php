@@ -23,11 +23,11 @@
             <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Group</h1>
+                <h1 class="m-0 text-dark"><i class="fas fa-address-book"></i> Group</h1>
                 </div>
                 <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="home">Home</a></li>
+                    <li class="breadcrumb-item"><i class="fas fa-home"></i><a href="home"> Home</a></li>
                     <li class="breadcrumb-item active"><a href="<?php echo $breadcrumb;?>"><?php echo $breadcrumb;?></a></li>
                 </ol>
                 </div>
@@ -120,8 +120,8 @@
                                                     cancelButtonColor: '#3085d6',
                                                     confirmButtonText: 'Delete'
                                                     }).then((result) => {
-                                                        $('#preloader').show();
                                                         if (result.value) {
+                                                            $('#preloader').show();
                                                             $.ajax({
                                                             url: base_url + "api/delgroup",
                                                             type: 'post',

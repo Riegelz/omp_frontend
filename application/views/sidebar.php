@@ -11,6 +11,7 @@ define("SUBMENUSUMMARY","submenusummary");
 define("HOME","home");
 define("GROUP","group");
 define("PRODUCT","product");
+define("PROMOTION","promotion");
 define("USER","user");
 define("ADDORDER","addorder");
 define("SEARCHORDER","searchorder");
@@ -89,16 +90,25 @@ $resp = pagestatus($this->session->userdata('page_status'));
 
             <?php if (rolemenu(PRODUCT)) { ?>
             <li class="nav-item">
-            <a href="pages/layout/boxed.html" class="nav-link <?php echo $resp[PRODUCT];?>">
+            <a href="<?=base_url()."product";?>" class="nav-link <?php echo $resp[PRODUCT];?>">
                 <em class="far fa-circle nav-icon"></em>
                 <p>Product</p>
             </a>
             </li>
             <?php } ?>
 
-            <?php if (rolemenu("user")) { ?>
+            <?php if (rolemenu(PROMOTION)) { ?>
             <li class="nav-item">
-            <a href="pages/layout/top-nav.html" class="nav-link <?php echo $resp[USER];?>">
+            <a href="<?=base_url()."promotion";?>" class="nav-link <?php echo $resp[PROMOTION];?>">
+                <em class="far fa-circle nav-icon"></em>
+                <p>Promotion</p>
+            </a>
+            </li>
+            <?php } ?>
+
+            <?php if (rolemenu(USER)) { ?>
+            <li class="nav-item">
+            <a href="<?=base_url()."user";?>" class="nav-link <?php echo $resp[USER];?>">
                 <em class="far fa-circle nav-icon"></em>
                 <p>User</p>
             </a>
@@ -280,6 +290,13 @@ function pagestatus($value)
             return $data;
             break;
 
+        case 'promotion':
+            $data[HEADMENUMANAGE] = MENUOPEN;
+            $data[SUBMENUMANAGE] = ACTIVE;
+            $data[PROMOTION] = ACTIVE;
+            return $data;
+            break;
+
         case 'addorder':
             $data[HEADMENUCOST] = MENUOPEN;
             $data[SUBMENUCOST] = ACTIVE;
@@ -336,6 +353,10 @@ function rolemenu($menu)
             break;
 
         case 'product':
+            $status = getPolicy(MEDIUM);
+            break;
+
+        case 'promotion':
             $status = getPolicy(MEDIUM);
             break;
 
