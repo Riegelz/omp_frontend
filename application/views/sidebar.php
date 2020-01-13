@@ -129,7 +129,7 @@ $resp = pagestatus($this->session->userdata('page_status'));
 
             <?php if (rolemenu(ADDORDER)) { ?>
             <li class="nav-item">
-                <a href="pages/layout/boxed.html" class="nav-link <?php echo $resp[ADDORDER];?>">
+                <a href="<?=base_url()."cost/addorder";?>" class="nav-link <?php echo $resp[ADDORDER];?>">
                     <em class="far fa-circle nav-icon"></em>
                     <p>Add Order</p>
                 </a>
