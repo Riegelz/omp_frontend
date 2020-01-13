@@ -50,6 +50,7 @@
                     <div class="card">  
                         <div class="card-body">
                             <div class="table-responsive">
+                                <input type="hidden" class="form-control" id="infofroupid" placeholder="">
                                 <table class="mdl-data-table" id="myTable" style="display:none; width: 100%;">
                                     <thead>
                                     <tr>
@@ -80,6 +81,25 @@
                                             <td style="text-align: center;"><span id="status" class="badge badge-<?php echo $color; ?>"><?php echo $project_status;?></span></td> 
                                             <td style="text-align: center;"><?php echo $row->create_date;?></td>
                                             <td style="text-align: center;">
+                                                <a id="info-button<?php echo $i?>" class="btn btn-warning btn-circle infobutton" href="#<?php echo $row->id?>" data-toggle="modal" data-target="#modal-overlay-info"> <span class="fas fa-info-circle" style="color:#fff;"></span> </a>
+                                                <script>
+                                                    $('#info-button<?php echo $i?>').click(function (e) { 
+                                                        var base_url = $("#baseurl").val();
+                                                        var groupid = $("#info-button<?php echo $i?>").attr("href").match(/#([0-9999]+)/)[1];
+                                                        $('#infofroupid').val(groupid);
+                                                        $('#myTableInfo').DataTable({
+                                                            responsive: true,
+                                                            columnDefs: [
+                                                                { className: 'text-center', targets: [0,1,2,3,4] },
+                                                            ],
+                                                            "bPaginate": false,
+                                                            "bFilter": false,
+                                                            "bInfo": false,
+                                                            "ajax": base_url + "api/getAccounInGroupBygid?groupid=" + groupid,
+                                                        });
+                                                        $('#overlay-info').attr("style", "display: none !important");
+                                                    });
+                                                </script>
                                                 <a id="editbutton<?php echo $i?>" class="btn btn-info btn-circle editbutton"  href="#<?php echo $row->id?>" data-toggle="modal" data-target="#modal-overlay"> <span class="fas fa-cog"></span> </a> 
                                                 <script>
                                                     $('#editbutton<?php echo $i?>').click(function (e) { 
@@ -253,6 +273,148 @@
     </div>
 <!-- /.modal-dialog -->
 </div>
+
+
+
+
+<div class="modal fade" id="modal-overlay-info" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div id="overlay-info" class="overlay d-flex justify-content-center align-items-center">
+            <i class="fas fa-2x fa-sync fa-spin"></i>
+        </div>
+        <div class="modal-header">
+            <h4 class="modal-title">Group setting</h4>
+            </button>
+        </div>
+        <div class="modal-body">
+            <ul class="nav nav-tabs" id="custom-content-above-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="custom-content-above-home-tab" data-toggle="pill" href="#custom-content-above-home" role="tab" aria-controls="custom-content-above-home" aria-selected="true">Account lists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#custom-content-above-profile" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">Account setting</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="custom-content-above-tabContent">
+                <div class="tab-pane fade show active" id="custom-content-above-home" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
+                    <form method="post" id="delgroupform" autocomplete="off"  action="#">
+                        <div class="card-body">
+                            <label for="grouplists">Account lists in groups </label>
+                            <div class="table-responsive">
+                                <table class="mdl-data-table" id="myTableInfo" style="display:none; width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th style="text-align: left;">ID</th>
+                                        <th style="text-align: left;">Account Name</th>
+                                        <th style="text-align: center;">Username</th>
+                                        <th style="text-align: center;">Role</th>
+                                        <th style="text-align: center;">Join date</th>
+                                        <th style="text-align: center;">Tools</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <script>
+                                function delgroup(gid,aid) {
+                                    var base_url = $("#baseurl").val();
+
+                                    Swal.fire({
+                                    title: 'Do you want to delete?',
+                                    text: "Please check detail before click 'Delete' a account!",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                    confirmButtonText: 'Delete'
+                                    }).then((result) => {
+                                        if (result.value) {
+                                            $('#preloader').show();
+                                            $.ajax({
+                                            url: base_url + "api/delmemberingroup",
+                                            type: 'post',
+                                            dataType: 'json',
+                                            data: {accountid:aid,groupid:gid},
+                                                success: function (response) {
+                                                    if (response == "success") {
+                                                        $('#preloader').hide();
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Success',
+                                                            text: "User account have been leave from group.",
+                                                            showConfirmButton: false,
+                                                            timer: 2500
+                                                        });
+                                                        location.reload();
+                                                    }else{
+                                                        $('#preloader').hide();
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: response,
+                                                            showConfirmButton: false,
+                                                            timer: 2500
+                                                        });
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            </script>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="custom-content-above-profile" role="tabpanel" aria-labelledby="custom-content-above-profile-tab">
+                    <div class="card-body">
+                        <label for="addgroupsetting">Add account setting</label>
+                        <div class="row">
+                            <div class="col-lg-5 col-md-5 col-sm-5 col-5">
+                                <select id="addaccountname" name="addaccountname" class="form-control select2" style="width: 100%;">
+                                    <option selected="selected" value="">-- Select Account --</option>
+                                    <?php foreach ($accountlists as $value) { ?>
+                                        <?php if ($value->status == "1") { ?>
+                                            <option value="<?php echo $value->id; ?>"><?php echo $value->username; ?></option>
+                                        <?php } ?>
+                                    <?php } ?>
+                                </select>
+                                <div id="alertaddaccountname" class="alertaddaccountname" style="display:none; color: red; margin-top: 5px;"> Account select cannot be null</div>    
+                            </div>
+
+                            <div class="col-lg-5 col-md-5 col-sm-5 col-5">
+                                <select id="addgrouprole" name="addgrouprole" class="form-control select2 selecterrorg" style="width: 100%;">
+                                    <option selected="selected" value="">-- Select Role --</option>
+                                    <option value="0"> User </option>
+                                    <option value="1"> Administrator </option>
+                                    <option value="2"> Owner </option>
+                                </select>
+                                <div id="alertaddgrouprole" class="alertaddgrouprole" style="display:none; color: red; margin-top: 5px;"> Group role cannot be null</div>    
+                            </div>
+
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-2">
+                                <button id="btnjoingroup" class="btn btn-success" style="width:100%;">Join Group</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer justify-content-between">
+            <button type="button" id="closeinfoaccount" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+<!-- /.modal-dialog -->
+</div>
+
+
+
+
+
+
 
 
 <input id="baseurl" name="baseurl" type="hidden" value="<?php echo base_url();?>">

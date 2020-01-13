@@ -168,8 +168,8 @@
                                                     cancelButtonColor: '#3085d6',
                                                     confirmButtonText: 'Delete'
                                                     }).then((result) => {
-                                                        $('#preloader').show();
                                                         if (result.value) {
+                                                            $('#preloader').show();
                                                             $.ajax({
                                                             url: base_url + "api/delaccount",
                                                             type: 'post',

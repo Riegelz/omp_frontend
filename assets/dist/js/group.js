@@ -24,7 +24,29 @@
         });
     }
 
+    function requireField2(text, tag)
+    {
+        $('*' + tag).css({
+            "border-color": "#DE0024", 
+            "border-width":"2px", 
+            "border-style":"solid",
+            "background-color":"#ffebef"
+        });
+    }
+
+    function successField2(text, tag)
+    {
+        $('*' + tag).css({
+            "border-color": "#18AF18", 
+            "border-width":"2px", 
+            "border-style":"solid",
+            "background-color":"#e3ffe5"
+        });
+    }
+
     $('#myTable').show()
+
+    $('#myTableInfo').show()
 
     $('#myTable').DataTable({
         responsive: true,
@@ -43,6 +65,14 @@
         $("#editgroupdescription").val("");
         $("#editgroupstatus").val("");
         $('#overlay').attr("style", "display:");
+    });
+
+    $('#closeinfoaccount').click(function (e) { 
+        $('#overlay').attr("style", "display:");
+        $('#addgroupname').prop('selectedIndex',0);
+        $('#addgrouprole').prop('selectedIndex',0);
+        var table = $('#myTableInfo').DataTable();
+        table.destroy();
     });
 
     $('#btncreategroup').click(function (e) { 
@@ -135,4 +165,64 @@
             }
         });
     });
+
+    $('#btnjoingroup').click(function (e) { 
+        e.preventDefault();
+        $('#preloader').show();
+        var base_url = $("#baseurl").val();
+        var groupid = $('#infofroupid').val();
+        var grouprole = $('#addgrouprole').val();
+        var accountid = $('#addaccountname').val();
+
+        if(accountid == '') {
+            requireField2('alertaddgroupname', '[data-select2-id="1"]');
+            $('#alertaddaccountname').show();
+            $('#preloader').hide();
+            window.scrollTo(0, $("#groupname").offset().top);
+            return false;
+        } else {
+            successField2('alertaddgroupname', '[data-select2-id="1"]');
+            $('#alertaddaccountname').hide();
+        }
+
+        if(grouprole == '') {
+            requireField2('alertaddgrouprole', '[data-select2-id="3"]');
+            $('#alertaddgrouprole').show();
+            $('#preloader').hide();
+            window.scrollTo(0, $("#addgrouprole").offset().top);
+            return false;
+        } else {
+            successField2('alertaddgrouprole', '[data-select2-id="3"]');
+            $('#alertaddgrouprole').hide();
+        }
+
+        $.ajax({
+            type: "POST",
+            url: base_url + "api/addmemberingroup",
+            data: {groupid:groupid,grouprole:grouprole,accountid:accountid},
+            dataType: "json",
+            success: function (response) {
+                if (response == "success") {
+                    $('#preloader').hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: "User account have been join in group.",
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                    location.reload();
+                }else{
+                    $('#preloader').hide();
+                    Swal.fire({
+                        icon: 'error',
+                        title: response,
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                }
+            }
+        });
+    });
+
 })(jQuery);

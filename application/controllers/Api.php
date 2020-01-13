@@ -41,7 +41,11 @@ class Api extends CI_Controller
         $jsondecode = json_decode($chkGroupMember);
         if (isset($jsondecode->data->groups[0])) {
             $groupuserinfo = $jsondecode->data->groups[0];
-            $this->session->set_userdata(["group_name" => $groupuserinfo->group_name, "group_role" => $groupuserinfo->group_role]);
+            $this->session->set_userdata(["group_id" => $groupuserinfo->group_id,"group_name" => $groupuserinfo->group_name, "group_role" => $groupuserinfo->group_role]);
+            $this->getProductLists($groupid);
+            $this->getPaymentLists();
+            $this->getLogisticLists();
+            $this->getAdsLists();
             echo json_encode("success");
         }else{
             echo json_encode("fail");
@@ -492,6 +496,284 @@ class Api extends CI_Controller
         }else{
             echo json_encode($jsondecode->description);
         }
+    }
+
+    public function getAccounInGroupBygid()
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+
+        $group_id = $product_id = $this->input->get('groupid');
+        $url = URLAPIV1."/group/omp/".$ompid."/id/".$group_id."/member";
+        $getGroupDetail = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getGroupDetail);
+        if ($jsondecode->data->groups) {
+            foreach ($jsondecode->data->groups as $key => $value) {
+                foreach ($value as $k => $info) {
+                    if ($k != "group_name" && $k != "gid") {
+                        if ($k == "group_role") {
+                            switch ($info) {
+                                case 1:
+                                    $color = "info";
+                                    $info = '<span id="role" class="badge badge-'.$color.'">Admin</span>';
+                                    break;
+
+                                case 2:
+                                    $color = "success";
+                                    $info = '<span id="role" class="badge badge-'.$color.'">Owner</span>';
+                                    break;
+                                
+                                default:
+                                    $color = "secondary";
+                                    $info = '<span id="role" class="badge badge-'.$color.'">Member</span>';
+                                    break;
+                            }
+                        }
+                       $datas[$key][] = $info;
+                    }
+                }
+                $datas[$key][] = '<a href="#'.$value->id.'" class="btn btn-danger btn-circle" onclick="delgroup(' . $value->gid .',' . $value->id . ')"> <span class="fas fa-trash-alt" style="color:#fff;"></span> </a>';
+            }
+            $groupinfo['data'] = $datas;
+            echo json_encode($groupinfo);
+        }else{
+            echo '{"data":""}';
+        }
+    }
+
+    public function getProductLists($gid)
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+
+        $url = URLAPIV1."/product/omp/".$ompid."/product_list/gid/".$gid;
+        $getProductDetail = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getProductDetail);
+        $productinfo = $jsondecode->data->products;
+        $key = 0;
+        foreach ($productinfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $productlists[$key]['id'] = $value->id;
+                $productlists[$key]['productname'] = $value->product_name;
+                $productlists[$key]['productprefix'] = $value->product_prefix;
+                $productnamelists['productnamelist'][$key] = $value->product_name;
+            }
+            $key++;
+        }
+        
+        if (isset($productlists)) {
+            $this->session->set_userdata(["group_product_info" => $productlists , "productnamelists" => $productnamelists]);
+        }else{
+            $this->session->unset_userdata('group_product_info');
+        }
+    }
+
+    public function getPaymentLists()
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+
+        $url = URLAPIV1."/other/paymentlists";
+        $getPaymentDetail = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getPaymentDetail);
+        $paymentinfo = $jsondecode->data->payments;
+        $key = 0;
+        foreach ($paymentinfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $paymentlist[$key]['id'] = $value->id;
+                $paymentlist[$key]['payment_code'] = $value->payment_code;
+                $paymentlist[$key]['payment_name'] = $value->payment_name;
+            }
+            $key++;
+        }
+        
+        if (isset($paymentlist)) {
+            $this->session->set_userdata(["payment_info" => $paymentlist]);
+        }else{
+            $this->session->unset_userdata('payment_info');
+        }
+    }
+
+    public function getLogisticLists()
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+
+        $url = URLAPIV1."/other/logisticlists";
+        $getLogisticDetail = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getLogisticDetail);
+        $logisticinfo = $jsondecode->data->logistics;
+        $key = 0;
+        foreach ($logisticinfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $logisticlist[$key]['id'] = $value->id;
+                $logisticlist[$key]['logistics_name'] = $value->logistics_name;
+            }
+            $key++;
+        }
+        
+        if (isset($logisticlist)) {
+            $this->session->set_userdata(["logistic_info" => $logisticlist]);
+        }else{
+            $this->session->unset_userdata('logistic_info');
+        }
+    }
+
+    public function getAdsLists()
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+
+        $url = URLAPIV1."/other/adslists";
+        $getAdsDetail = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getAdsDetail);
+        $adsinfo = $jsondecode->data->logistics;
+        $key = 0;
+        foreach ($adsinfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $adslist[$key]['id'] = $value->id;
+                $adslist[$key]['ads_name'] = $value->ads_name;
+            }
+            $key++;
+        }
+        
+        if (isset($adslist)) {
+            $this->session->set_userdata(["ads_info" => $adslist]);
+        }else{
+            $this->session->unset_userdata('ads_info');
+        }
+    }
+
+    public function getPromotionLists()
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+
+        $product_id = $this->input->post('productid');
+        $url = URLAPIV1."/promotion/omp/".$ompid."/promotion_list/productid/".$product_id;
+        $getPromotionDetail = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getPromotionDetail);
+        $promotioninfo = $jsondecode->data->products;
+        $key = 0;
+        foreach ($promotioninfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $promotionlist[$key]['id'] = $value->id;
+                $promotionlist[$key]['promotion_name'] = $value->promotion_name;
+                $promotionlist[$key]['promotion_price'] = $value->promotion_price;
+            }
+            $key++;
+        }
+        echo json_encode($promotionlist);
+    }
+
+    public function saveOrder()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+
+        $ordertransaction = date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
+        $orderproductid = $this->input->post('orderproductid');
+        $ordergroupid = $_SESSION['group_id'];
+        $ordername = $this->input->post('ordername');
+        $orderaddress = $this->input->post('orderaddress');
+        $orderdistrict = $this->input->post('orderdistrict');
+        $ordersubdistrict = $this->input->post('ordersubdistrict');
+        $orderzipcode = $this->input->post('orderzipcode');
+        $orderprovince = $this->input->post('orderprovince');
+        $ordertelnumber = $this->input->post('ordertelnumber');
+        $orderprice = $this->input->post('orderprice');
+        $orderlogisticid = $this->input->post('orderlogisticid');
+        $orderdate = $this->input->post('orderdate');
+        $orderpaymentid = $this->input->post('orderpaymentid');
+        $orderpromotionid = $this->input->post('orderpromotionid');
+        $orderdescription = $this->input->post('orderdescription');
+        $order_by_account_id = $_SESSION['userid'];
+        $order_country = $this->input->post('ordercountry');
+        if ($orderlogisticid == "3") {
+            $order_status = "waiting";
+        }else{
+            $order_status = "recieved";
+        }
+        $order_tracking_id = $this->input->post('ordertracking');
+
+
+        $jsondata = json_encode([
+            "omp_id" => $ompid,
+            "transaction_id" => $ordertransaction,
+            "product_id" => $orderproductid,
+            "group_id" => $ordergroupid,
+            "order_name" => $ordername,
+            "order_address" => $orderaddress,
+            "order_district" => $orderdistrict,
+            "order_subdistrict" => $ordersubdistrict,
+            "order_zipcode" => $orderzipcode,
+            "order_province" => $orderprovince,
+            "order_telnumber" => $ordertelnumber,
+            "order_cost" => $orderprice,
+            "order_logistics_id" => $orderlogisticid,
+            "order_datetime" => date("Y-m-d H:i:s",strtotime($orderdate)),
+            "order_payment_id" => $orderpaymentid,
+            "order_promotion_id" => $orderpromotionid,
+            "order_description" => $orderdescription,
+            "order_tracking_id" => (!empty($order_tracking_id)) ? $order_tracking_id:null,
+            "order_status" => $order_status,
+            "order_country" => (!empty($order_country)) ? $order_country:"TH",
+            "order_by_account_id" => $order_by_account_id
+        ]);
+
+        $url = URLAPIV1."/order/add_order";
+        $createGroup = $this->auth->curlPostAPI($accesstoken,$url,$jsondata);
+
+        $jsondecode = json_decode($createGroup);
+        if ($jsondecode->status == 200) {
+            echo json_encode("success");
+        }else{
+            echo json_encode($jsondecode->description);
+        }
+    }
+
+    public function getDistricts()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $provinceid = $this->input->post('province');
+        $url = URLAPIV1."/other/districts/province/".$provinceid;
+        $getDistricts = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getDistricts);
+        $districtsinfo = $jsondecode->data->districts;
+        $key = 0;
+        foreach ($districtsinfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $districtlist[$key]['id'] = $value->id;
+                $districtlist[$key]['districts_name'] = $value->name_th;
+            }
+            $key++;
+        }
+        echo json_encode($districtlist);
+    }
+
+    public function getSubDistricts()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $districtid = $this->input->post('district');
+        $url = URLAPIV1."/other/subdistricts/districts/".$districtid;
+        $getSubDistricts = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($getSubDistricts);
+        $subdistrictsinfo = $jsondecode->data->subdistricts;
+        $key = 0;
+        foreach ($subdistrictsinfo as $value) {
+            if (!empty($value) && $value != ' ') {
+                $subdistrict[$key]['id'] = $value->id;
+                $subdistrict[$key]['subdistricts_name'] = $value->name_th;
+                $subdistrict[$key]['zip_code'] = $value->zip_code;
+            }
+            $key++;
+        }
+        echo json_encode($subdistrict);
     }
 
 }
