@@ -40,4 +40,40 @@ class Cost extends CI_Controller {
         $this->load->view('sidebar',$groupdata);
     }
 
+    public function addcost()
+	{
+        $this->session->set_userdata('page_status', 'addcost');
+		$data['breadcrumb'] = "Add Cost";
+        $data['title'] = 'OMP | Add Cost';
+        
+        ## Get User Group ##
+        $accesstoken = $this->session->userdata(ACCESSTOKEN);
+        $accountid = $this->session->userdata('userid');
+        $ompid = $this->session->userdata('ompid');
+        $url = URLAPIV1."/group/omp/".$ompid."/group_list/aid/".$accountid;
+        $getUserGroup = json_decode($this->auth->curlGetAPI($accesstoken,$url));
+        $groupdata['grouplists'] = $getUserGroup->data->groups;
+
+        ## Get Product ##
+        $groupid = $this->session->userdata('group_id');
+        $url = URLAPIV1."/product/omp/".$ompid."/product_list/gid/".$groupid;
+        $getProduct = json_decode($this->auth->curlGetAPI($accesstoken,$url));
+        $data['productlists'] = $getProduct->data->products;
+
+        ## Get Ads ##
+        $url = URLAPIV1."/other/adslists";
+        $getAds = json_decode($this->auth->curlGetAPI($accesstoken,$url));
+        $data['adslists'] = $getAds->data->ads;
+
+        ## Get Logistic ##
+        $url = URLAPIV1."/other/logisticlists";
+        $getAds = json_decode($this->auth->curlGetAPI($accesstoken,$url));
+        $data['logisticlists'] = $getAds->data->logistics;
+
+        $this->load->view('head');
+        $this->load->view('addcost',$data);
+        $this->load->view('footer');
+        $this->load->view('sidebar',$groupdata);
+    }
+
 }

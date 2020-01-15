@@ -14,6 +14,7 @@ define("PRODUCT","product");
 define("PROMOTION","promotion");
 define("USER","user");
 define("ADDORDER","addorder");
+define("ADDCOST","addcost");
 define("SEARCHORDER","searchorder");
 define("SEARCHCOST","searchcost");
 define("SUMMARYREPORT","summaryreport");
@@ -136,9 +137,9 @@ $resp = pagestatus($this->session->userdata('page_status'));
             </li>
             <?php } ?>  
 
-            <?php if (rolemenu("addcost")) { ?>
+            <?php if (rolemenu(ADDCOST)) { ?>
             <li class="nav-item">
-                <a href="pages/layout/boxed.html" class="nav-link <?php echo $resp[ADDCOST];?>">
+                <a href="<?=base_url()."cost/addcost";?>" class="nav-link <?php echo $resp[ADDCOST];?>">
                     <em class="far fa-circle nav-icon"></em>
                     <p>Add Ads & Logistic Cost</p>
                 </a>
