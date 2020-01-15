@@ -592,6 +592,7 @@
         var orderpromotionid = $('#pname [value="' + $("#avorderprice").val() + '"]').data('promotionid');
 
         if (orderproductid == '') {
+            $('#preloader').hide();
             $("#avorderproductid").addClass("is-invalid");
             return false;
         }else{
@@ -600,6 +601,7 @@
         }
 
         if (orderlogisticid == '') {
+            $('#preloader').hide();
             $("#avorderlogisticid").addClass("is-invalid");
             return false;
         }else{
@@ -608,6 +610,7 @@
         }
 
         if (orderprice == '') {
+            $('#preloader').hide();
             $("#avorderprice").addClass("is-invalid");
             return false;
         }else{
@@ -616,6 +619,7 @@
         }
 
         if (orderdate == '') {
+            $('#preloader').hide();
             $("#avorderdate").addClass("is-invalid");
             return false;
         }else{
@@ -624,6 +628,7 @@
         }
 
         if (ordername == '') {
+            $('#preloader').hide();
             $("#avordername").addClass("is-invalid");
             return false;
         }else{
@@ -632,6 +637,7 @@
         }
 
         if (orderaddress == '') {
+            $('#preloader').hide();
             $("#avorderaddress").addClass("is-invalid");
             return false;
         }else{
@@ -648,6 +654,7 @@
         }
 
         if (ordersubdistrict == '') {
+            $('#preloader').hide();
             $("#avordersubdistrict").addClass("is-invalid");
             return false;
         }else{
@@ -656,6 +663,7 @@
         }
 
         if (orderzipcode == '') {
+            $('#preloader').hide();
             $("#avorderzipcode").addClass("is-invalid");
             return false;
         }else{
@@ -664,6 +672,7 @@
         }
 
         if (orderprovince == '') {
+            $('#preloader').hide();
             $("#avprovince").addClass("is-invalid");
             return false;
         }else{
@@ -672,6 +681,7 @@
         }
 
         if (orderpaymentid == '') {
+            $('#preloader').hide();
             $("#avorderpaymentid").addClass("is-invalid");
             return false;
         }else{

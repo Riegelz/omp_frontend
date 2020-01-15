@@ -776,4 +776,68 @@ class Api extends CI_Controller
         echo json_encode($subdistrict);
     }
 
+    public function saveAdsCost()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+        $groupid = $this->session->userdata('group_id');
+        $product_id = $this->input->post('product_id');
+        $ads_id = $this->input->post('ads_id');
+        $ads_cost = $this->input->post('ads_cost');
+        $datetime = $this->input->post('datetime');
+        $ads_by_account_id = $_SESSION['userid'];
+
+        $jsondata = json_encode([
+            "omp_id" => $ompid,
+            "group_id" => $groupid,
+            "product_id" => $product_id,
+            "ads_id" => $ads_id,
+            "ads_cost" => $ads_cost,
+            "datetime" => date("Y-m-d 00:00:00",strtotime($datetime)),
+            "ads_by_account_id" => $ads_by_account_id
+        ]);
+
+        $url = URLAPIV1."/cost/add_ads_cost";
+        $addAdsCost = $this->auth->curlPostAPI($accesstoken,$url,$jsondata);
+
+        $jsondecode = json_decode($addAdsCost);
+        if ($jsondecode->status == 200) {
+            echo json_encode("success");
+        }else{
+            echo json_encode($jsondecode->description);
+        }
+    }
+
+    public function saveLogisticCost()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+        $groupid = $this->session->userdata('group_id');
+        $product_id = $this->input->post('product_id');
+        $logistic_id = $this->input->post('logistic_id');
+        $logistics_cost = $this->input->post('logisticcost_cost');
+        $datetime = $this->input->post('datetime');
+        $logistics_by_account_id = $_SESSION['userid'];
+
+        $jsondata = json_encode([
+            "omp_id" => $ompid,
+            "group_id" => $groupid,
+            "product_id" => $product_id,
+            "logistics_id" => $logistic_id,
+            "logistics_cost" => $logistics_cost,
+            "datetime" => date("Y-m-d 00:00:00",strtotime($datetime)),
+            "logistics_by_account_id" => $logistics_by_account_id
+        ]);
+
+        $url = URLAPIV1."/cost/add_logistics_cost";
+        $addLogisticCost = $this->auth->curlPostAPI($accesstoken,$url,$jsondata);
+
+        $jsondecode = json_decode($addLogisticCost);
+        if ($jsondecode->status == 200) {
+            echo json_encode("success");
+        }else{
+            echo json_encode($jsondecode->description);
+        }
+    }
+
 }

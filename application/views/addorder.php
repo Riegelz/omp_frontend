@@ -227,16 +227,6 @@
                                     </div>
 
                                     <div class="tab-pane fade" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
-                                        
-
-
-
-
-
-
-
-
-
                                         <div class="col-md-12">
                                             <br>
                                         </div>
@@ -302,9 +292,9 @@
                                                                 <div class="form-group">
                                                                     <label>วันที่ ​: </label>
                                                                     <input class="form-control" type="text" id="avorderdate" name="avorderdate">
-                                                                </div>
-                                                                <div class="invalid-feedback">
-                                                                    Please select Date
+                                                                    <div class="invalid-feedback">
+                                                                        Please select Date
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -312,9 +302,9 @@
                                                                 <div class="form-group">
                                                                     <label>ชื่อ - นามสกุล* ​: </label>
                                                                     <input id="avordername" class="form-control">
-                                                                </div>
-                                                                <div class="invalid-feedback">
-                                                                    Please insert order name
+                                                                    <div class="invalid-feedback">
+                                                                        Please insert order name
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -329,9 +319,9 @@
                                                                 <div class="form-group">
                                                                     <label>ที่อยู่ 1* ​: </label>
                                                                     <textarea id="avorderaddress" class="form-control" rows="4"></textarea>
-                                                                </div>
-                                                                <div class="invalid-feedback">
-                                                                    Please insert address
+                                                                    <div class="invalid-feedback">
+                                                                        Please insert address
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -341,9 +331,9 @@
                                                                     <select id="avorderdistrict" name="avorderdistrict" class="form-control" style="width: 100%;" disabled>
                                                                         <option selected="selected" value="">-- Select Districts --</option>
                                                                     </select>
-                                                                </div>
-                                                                <div class="invalid-feedback">
-                                                                    Please select District
+                                                                    <div class="invalid-feedback">
+                                                                        Please select District
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -353,9 +343,9 @@
                                                                     <select id="avordersubdistrict" name="avordersubdistrict" class="form-control" style="width: 100%;" disabled>
                                                                         <option selected="selected" value="">-- Select Sub Districts --</option>
                                                                     </select>
-                                                                </div>
-                                                                <div class="invalid-feedback">
-                                                                    Please select Sub district
+                                                                    <div class="invalid-feedback">
+                                                                        Please select Sub district
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -363,9 +353,9 @@
                                                                 <div class="form-group">
                                                                     <label>รหัสไปรษณีย์* ​: </label>
                                                                     <input id="avorderzipcode" class="form-control" maxlength="5">
-                                                                </div>
-                                                                <div class="invalid-feedback">
-                                                                    Please insert zipcode
+                                                                    <div class="invalid-feedback">
+                                                                        Please insert zipcode
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -419,19 +409,8 @@
                                                 </div>
                                             </div>
                                         </form>
-
-
-
-
-
-
-
-
-
-
                                     </div>
                                 </div>
-                                
                             </div>
                         </div> 
                     </div> 
