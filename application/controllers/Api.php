@@ -840,4 +840,184 @@ class Api extends CI_Controller
         }
     }
 
+
+
+
+
+    public function getSearchOrder()
+	{
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+        $groupid = $this->session->userdata('group_id');
+        $product_id = $this->input->get('productid');
+        $order_name = $this->input->get('ordername');
+        $order_district = $this->input->get('district');
+        $order_subdistrict = $this->input->get('subdistrict');
+        $order_zipcode = $this->input->get('zipcode');
+        $order_province = $this->input->get('province');
+        $order_telnumber = $this->input->get('ordertelnumber');
+        $order_logistics_id = $this->input->get('order_logistic');
+        $order_datetime = $this->input->get('orderdate');
+        $order_payment_id = $this->input->get('order_payment');
+        $order_tracking_id = $this->input->get('ordertracking');
+        $order_status = $this->input->get('order_status');
+        $order_by_account_id = $this->input->get('order_by_account_id');
+        $order_startrow = $this->input->get('start');
+        $order_length = $this->input->get('length');
+
+        $jsondata = json_encode([
+            "omp_id" => $ompid,
+            "group_id" => $groupid,
+            "product_id" => $product_id,
+            "order_name" => $order_name,
+            "order_district" => $order_district,
+            "order_subdistrict" => $order_subdistrict,
+            "order_zipcode" => $order_zipcode,
+            "order_province" => $order_province,
+            "order_telnumber" => $order_telnumber,
+            "order_logistics_id" => $order_logistics_id,
+            "order_datetime" => $order_datetime,
+            "order_payment_id" => $order_payment_id,
+            "order_tracking_id" => $order_tracking_id,
+            "order_status" => $order_status,
+            "order_by_account_id" => $order_by_account_id,
+            "order_startrow" => $order_startrow,
+            "order_length" => $order_length,
+        ]);
+
+        $url = URLAPIV1."/order/search_order";
+        $searchOrderlists = $this->auth->curlPostAPI($accesstoken,$url,$jsondata);
+
+        $jsondecode = json_decode($searchOrderlists);
+        if ($jsondecode->data->order) {
+            foreach ($jsondecode->data->order as $key => $value) {
+                foreach ($value as $k => $info) {
+                    if ($k == "order_status") {
+                        switch ($info) {
+                            case "recieved":
+                                $color = "success";
+                                $info = '<span id="role" class="badge badge-'.$color.'">Recieved</span>';
+                                break;
+
+                            case "waiting":
+                                $color = "danger";
+                                $info = '<span id="role" class="badge badge-'.$color.'">Waiting</span>';
+                                break;
+                            
+                            default:
+                                $color = "secondary";
+                                $info = '<span id="role" class="badge badge-'.$color.'">None</span>';
+                                break;
+                        }
+                    }
+                    $datas[$key][] = $info;
+                }
+                $datas[$key][] = '<a href="#'.$value->id.'" class="btn btn-danger btn-circle" onclick="delorder(' . $value->id . ')"> <span class="fas fa-trash-alt" style="color:#fff;"></span> </a>  <a href="#'.$value->id.'" data-toggle="modal" data-target="#modal-overlay" class="btn btn-warning btn-circle" onclick="editorder(' . $value->id . ')"> <span class="fas fa-cog" style="color:#fff;"></span> </a>';
+            }
+            $resp['draw'] = $this->input->get('draw');
+            $resp['recordsTotal'] = $jsondecode->data->total->total;
+            $resp['recordsFiltered'] = $jsondecode->data->total->total;
+            $resp['data'] = $datas;
+            echo json_encode($resp);
+        }else{
+            echo '{"data":""}';
+        }
+    }
+
+    public function delorderlist()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+
+        $groupid = $this->session->userdata('group_id');
+        $order_id = $this->input->post('orderid');
+        $account_id = $_SESSION['userid'];
+        $url = URLAPIV1."/order/omp/".$ompid."/id/". $order_id ."/aid/".$account_id."/gid/".$groupid;
+        $delOrder = $this->auth->curlDelAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($delOrder);
+        if ($jsondecode->status == 200) {
+            echo json_encode("success");
+        }else{
+            echo json_encode($jsondecode->description);
+        }
+    }
+
+    public function editorderlist()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+        $order_id = $this->input->post('order_id');
+        $url = URLAPIV1."/order/omp/".$ompid."/order_list/oid/".$order_id;
+        $editorderlist = $this->auth->curlGetAPI($accesstoken,$url);
+
+        $jsondecode = json_decode($editorderlist);
+        $orderinfo = $jsondecode->data->order;
+        echo json_encode($orderinfo);
+    }
+
+    public function editOrder()
+    {
+        $accesstoken = $this->session->userdata('accesstoken');
+        $ompid = $this->session->userdata('ompid');
+
+        $orderid = $this->input->post('orderid');
+        $ordertransaction = $this->input->post('ordertransaction');
+        $orderproductid = $this->input->post('orderproductid');
+        $ordergroupid = $_SESSION['group_id'];
+        $ordername = $this->input->post('ordername');
+        $orderaddress = $this->input->post('orderaddress');
+        $orderdistrict = $this->input->post('orderdistrict');
+        $ordersubdistrict = $this->input->post('ordersubdistrict');
+        $orderzipcode = $this->input->post('orderzipcode');
+        $orderprovince = $this->input->post('orderprovince');
+        $ordertelnumber = $this->input->post('ordertelnumber');
+        $orderprice = $this->input->post('orderprice');
+        $orderlogisticid = $this->input->post('orderlogisticid');
+        $orderdate = $this->input->post('orderdate');
+        $orderpaymentid = $this->input->post('orderpaymentid');
+        $orderpromotionid = $this->input->post('orderpromotionid');
+        $orderdescription = $this->input->post('orderdescription');
+        $order_by_account_id = $this->input->post('order_by_account_id');
+        $order_country = $this->input->post('ordercountry');
+        $order_status = $this->input->post('orderstatus');
+        $order_tracking_id = $this->input->post('ordertracking');
+
+
+        $jsondata = json_encode([
+            "omp_id" => $ompid,
+            "id" => $orderid,
+            "transaction_id" => $ordertransaction,
+            "product_id" => $orderproductid,
+            "group_id" => $ordergroupid,
+            "order_name" => $ordername,
+            "order_address" => $orderaddress,
+            "order_district" => $orderdistrict,
+            "order_subdistrict" => $ordersubdistrict,
+            "order_zipcode" => $orderzipcode,
+            "order_province" => $orderprovince,
+            "order_telnumber" => $ordertelnumber,
+            "order_cost" => $orderprice,
+            "order_logistics_id" => $orderlogisticid,
+            "order_datetime" => date("Y-m-d H:i:s",strtotime($orderdate)),
+            "order_payment_id" => $orderpaymentid,
+            "order_promotion_id" => $orderpromotionid,
+            "order_description" => $orderdescription,
+            "order_tracking_id" => (!empty($order_tracking_id)) ? $order_tracking_id:null,
+            "order_status" => $order_status,
+            "order_country" => (!empty($order_country)) ? $order_country:"TH",
+            "order_by_account_id" => $order_by_account_id
+        ]);
+
+        $url = URLAPIV1."/order/edit_order";
+        $createGroup = $this->auth->curlPostAPI($accesstoken,$url,$jsondata);
+
+        $jsondecode = json_decode($createGroup);
+        if ($jsondecode->status == 200) {
+            echo json_encode("success");
+        }else{
+            echo json_encode($jsondecode->description);
+        }
+    }
+
 }
