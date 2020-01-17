@@ -76,9 +76,11 @@ switch (ENVIRONMENT)
 	break;
 
 	case 'production':
-		date_default_timezone_set("Asia/Bangkok");
-		error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
+		error_reporting(-1);
 		ini_set('display_errors', 0);
+		date_default_timezone_set("Asia/Bangkok");
+		define('URLGETTOKEN','http://18.138.123.133/omp_backend/src/public/index.php/token');
+		define('URLAPIV1','http://18.138.123.133/omp_backend/src/public/index.php/api/v1');
 	break;
 
 	default:
