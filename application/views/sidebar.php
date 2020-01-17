@@ -161,7 +161,7 @@ $resp = pagestatus($this->session->userdata('page_status'));
 
             <?php if (rolemenu(SEARCHORDER)) { ?>
             <li class="nav-item">
-                <a href="pages/layout/boxed.html" class="nav-link <?php echo $resp[SEARCHORDER];?>">
+                <a href="<?=base_url()."search/searchorder";?>" class="nav-link <?php echo $resp[SEARCHORDER];?>">
                     <em class="far fa-circle nav-icon"></em>
                     <p>Search Order</p>
                 </a>
@@ -170,7 +170,7 @@ $resp = pagestatus($this->session->userdata('page_status'));
 
             <?php if (rolemenu(SEARCHCOST)) { ?>
             <li class="nav-item">
-                <a href="pages/layout/boxed.html" class="nav-link <?php echo $resp[SEARCHCOST];?>">
+                <a href="#" class="nav-link <?php echo $resp[SEARCHCOST];?>">
                     <em class="far fa-circle nav-icon"></em>
                     <p>Search Cost</p>
                 </a>
@@ -191,7 +191,7 @@ $resp = pagestatus($this->session->userdata('page_status'));
         <ul class="nav nav-treeview">
             <?php if (rolemenu(SUMMARYREPORT)) { ?>
             <li class="nav-item">
-                <a href="pages/layout/boxed.html" class="nav-link <?php echo $resp[SUMMARYREPORT];?>">
+                <a href="#" class="nav-link <?php echo $resp[SUMMARYREPORT];?>">
                     <em class="far fa-circle nav-icon"></em>
                     <p>Summary Report</p>
                 </a>
