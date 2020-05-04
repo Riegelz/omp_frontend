@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://18.138.123.133/omp_frontend/';
+$config['base_url'] = 'http://localhost/online_marketing_platform/omp_frontend/';
 
 /*
 |--------------------------------------------------------------------------
